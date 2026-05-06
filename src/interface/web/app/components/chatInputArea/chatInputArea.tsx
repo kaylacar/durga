@@ -452,6 +452,9 @@ export const ChatInputArea = forwardRef<HTMLTextAreaElement, ChatInputProps>((pr
         }
 
         function handleKeyDown(e: KeyboardEvent) {
+            // Reject synthetic events: only real user keystrokes start the mic.
+            // Defends against XSS-injected dispatchEvent triggering covert recording.
+            if (!e.isTrusted) return;
             if (!matchesHotkey(e)) return;
             // Allow the hotkey to fire even when the chat textarea is focused,
             // since the modifier combo (Ctrl+Shift+Space) is not used for typing.

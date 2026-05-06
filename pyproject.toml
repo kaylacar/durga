@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
@@ -78,7 +78,7 @@ dependencies = [
     "phonenumbers == 8.13.27",
     "markdownify ~= 0.14.1",
     "markdown-it-py ~= 3.0.0",
-    "edge-tts >= 7.0.0",
+    "edge-tts == 7.0.2",
     "websockets == 13.0",
     "psutil >= 5.8.0",
     "huggingface-hub[hf_xet] >= 0.22.2",
@@ -97,7 +97,7 @@ dependencies = [
     "mcp >= 1.23.0",
     "pyasn1>=0.6.3",
 ]
-version = "0.1.0-durga"
+version = "0.1.0+durga"
 
 [project.urls]
 Homepage = "https://khoj.dev"
@@ -132,10 +132,6 @@ dev = [
     "datasets",
     "pandas",
 ]
-
-[tool.hatch.version]
-source = "vcs"
-raw-options.local_scheme = "no-local-version"  # PEP440 compliant version for PyPi
 
 [tool.hatch.build.targets.sdist]
 include = ["src/khoj"]

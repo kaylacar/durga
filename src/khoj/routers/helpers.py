@@ -204,6 +204,10 @@ def update_telemetry_state(
     host: Optional[str] = None,
     metadata: Optional[dict] = None,
 ):
+    # Durga: short-circuit when telemetry is disabled (default) so the in-memory
+    # state.telemetry buffer can't grow unbounded between never-fired uploads.
+    if state.telemetry_disabled:
+        return
     user: KhojUser = request.user.object if request.user.is_authenticated else None
     client_app: ClientApplication = request.user.client_app if request.user.is_authenticated else None
     subscription: Subscription = user.subscription if user and hasattr(user, "subscription") else None
