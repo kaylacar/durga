@@ -457,7 +457,7 @@ function ChatBodyData(props: ChatBodyDataProps) {
                                         <ArrowsVertical className="h-5 w-5" />
                                     )}
                                     {selectedAgent
-                                        ? `${agents?.find((agent) => agent.slug === selectedAgent)?.name ?? "Khoj"}`
+                                        ? `${agents?.find((agent) => agent.slug === selectedAgent)?.name ?? "Durga"}`
                                         : "Select Agent"}
                                 </Button>
                             </DropdownMenuTrigger>
@@ -482,7 +482,7 @@ function ChatBodyData(props: ChatBodyDataProps) {
                                             chatInputRef.current?.focus();
                                         }}
                                     >
-                                        {getIconFromIconName("Lightbulb", "orange")} Khoj
+                                        {getIconFromIconName("Lightbulb", "orange")} Durga
                                     </DropdownMenuItem>
                                 )}
                             </DropdownMenuContent>
@@ -581,7 +581,7 @@ export default function Home() {
                     )}
                 </header>
                 <div className={`${styles.main} ${styles.chatLayout}`}>
-                    <title>Khoj AI - Your Second Brain</title>
+                    <title>Durga AI - Your Second Brain</title>
                     <div className={`${styles.chatBox}`}>
                         <div className={`${styles.chatBoxBody}`}>
                             {!authenticationLoading && (

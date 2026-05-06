@@ -46,7 +46,10 @@ export interface KhojSetting {
 
 export const DEFAULT_SETTINGS: KhojSetting = {
     resultsCount: 15,
-    khojUrl: 'https://app.khoj.dev',
+    // Durga: privacy-first default. The Obsidian plugin no longer points at the hosted
+    // Khoj service. Users who want the hosted service can set their server URL in plugin
+    // settings; the default assumes a local self-hosted Durga.
+    khojUrl: 'http://127.0.0.1:42110',
     khojApiKey: '',
     connectedToBackend: false,
     autoConfigure: true,

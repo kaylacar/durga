@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "../globals.css";
 
 export const metadata: Metadata = {
-    title: "Khoj AI - Agents",
+    title: "Durga AI - Agents",
     description:
         "Find or create agents with custom knowledge, tools and personalities to help address your specific needs.",
     icons: {
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
         apple: "/static/assets/icons/khoj_lantern_256x256.png",
     },
     openGraph: {
-        siteName: "Khoj AI",
-        title: "Khoj AI - Agents",
+        siteName: "Durga AI",
+        title: "Durga AI - Agents",
         description:
             "Find or create agents with custom knowledge, tools and personalities to help address your specific needs.",
         url: "https://app.khoj.dev/agents",

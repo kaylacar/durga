@@ -54,6 +54,28 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+// Push-to-talk hotkey configuration.
+// While this combo is held, recording starts; on release it stops.
+// Modifiers: ctrl, shift, alt, meta. `key` is matched against KeyboardEvent.code
+// (so it is layout-independent and not affected by Shift, e.g. "Space").
+interface PushToTalkHotkey {
+    ctrl: boolean;
+    shift: boolean;
+    alt: boolean;
+    meta: boolean;
+    code: string;
+    label: string;
+}
+
+const PUSH_TO_TALK_HOTKEY: PushToTalkHotkey = {
+    ctrl: true,
+    shift: true,
+    alt: false,
+    meta: false,
+    code: "Space",
+    label: "Ctrl+Shift+Space",
+};
+
 export interface ChatOptions {
     [key: string]: string;
 }
@@ -108,6 +130,10 @@ export const ChatInputArea = forwardRef<HTMLTextAreaElement, ChatInputProps>((pr
 
     const [recording, setRecording] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+    // Tracks whether the active recording was initiated by push-to-talk.
+    // Used so a key release reliably stops a recording that may still be spinning up.
+    const pushToTalkActiveRef = useRef(false);
+    const [pushToTalkHeld, setPushToTalkHeld] = useState(false);
 
     const [progressValue, setProgressValue] = useState(0);
     const [isDragAndDropping, setIsDragAndDropping] = useState(false);
@@ -183,7 +209,7 @@ export const ChatInputArea = forwardRef<HTMLTextAreaElement, ChatInputProps>((pr
         if (!message.trim() && imageData.length === 0) return;
         if (!props.isLoggedIn) {
             setLoginRedirectMessage(
-                "Hey there, you need to be signed in to send messages to Khoj AI",
+                "Hey there, you need to be signed in to send messages to Durga AI",
             );
             setShowLoginPrompt(true);
             return;
@@ -404,6 +430,79 @@ export const ChatInputArea = forwardRef<HTMLTextAreaElement, ChatInputProps>((pr
             startRecordingAndTranscribe();
         }
     }, [recording, mediaRecorder]);
+
+    // Global push-to-talk hotkey: hold the configured combo to record, release to stop.
+    useEffect(() => {
+        function isEditableTarget(target: EventTarget | null): boolean {
+            if (!(target instanceof HTMLElement)) return false;
+            const tag = target.tagName;
+            if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+            if (target.isContentEditable) return true;
+            return false;
+        }
+
+        function matchesHotkey(e: KeyboardEvent): boolean {
+            return (
+                e.code === PUSH_TO_TALK_HOTKEY.code &&
+                e.ctrlKey === PUSH_TO_TALK_HOTKEY.ctrl &&
+                e.shiftKey === PUSH_TO_TALK_HOTKEY.shift &&
+                e.altKey === PUSH_TO_TALK_HOTKEY.alt &&
+                e.metaKey === PUSH_TO_TALK_HOTKEY.meta
+            );
+        }
+
+        function handleKeyDown(e: KeyboardEvent) {
+            if (!matchesHotkey(e)) return;
+            // Allow the hotkey to fire even when the chat textarea is focused,
+            // since the modifier combo (Ctrl+Shift+Space) is not used for typing.
+            // For other editable targets, do not intercept.
+            if (isEditableTarget(e.target) && e.target !== chatInputRef?.current) return;
+            if (e.repeat) {
+                e.preventDefault();
+                return;
+            }
+            e.preventDefault();
+            if (!props.isLoggedIn) return;
+            if (pushToTalkActiveRef.current) return;
+            if (recording || mediaRecorder) return;
+            pushToTalkActiveRef.current = true;
+            setPushToTalkHeld(true);
+            setRecording(true);
+        }
+
+        function handleKeyUp(e: KeyboardEvent) {
+            // Stop on release of the main key OR any required modifier, so the user
+            // cannot accidentally leave recording running by lifting Shift first.
+            if (!pushToTalkActiveRef.current) return;
+            const releasedTrigger =
+                e.code === PUSH_TO_TALK_HOTKEY.code ||
+                (PUSH_TO_TALK_HOTKEY.ctrl && (e.key === "Control" || e.code.startsWith("Control"))) ||
+                (PUSH_TO_TALK_HOTKEY.shift && (e.key === "Shift" || e.code.startsWith("Shift"))) ||
+                (PUSH_TO_TALK_HOTKEY.alt && (e.key === "Alt" || e.code.startsWith("Alt"))) ||
+                (PUSH_TO_TALK_HOTKEY.meta && (e.key === "Meta" || e.code.startsWith("Meta")));
+            if (!releasedTrigger) return;
+            pushToTalkActiveRef.current = false;
+            setPushToTalkHeld(false);
+            setRecording(false);
+        }
+
+        function handleBlur() {
+            // If the window loses focus while held, stop cleanly.
+            if (!pushToTalkActiveRef.current) return;
+            pushToTalkActiveRef.current = false;
+            setPushToTalkHeld(false);
+            setRecording(false);
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
+        window.addEventListener("blur", handleBlur);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
+            window.removeEventListener("blur", handleBlur);
+        };
+    }, [recording, mediaRecorder, props.isLoggedIn, chatInputRef]);
 
     useEffect(() => {
         if (!chatInputRef?.current) return;
@@ -642,6 +741,18 @@ export const ChatInputArea = forwardRef<HTMLTextAreaElement, ChatInputProps>((pr
                             </Dialog>
                         ))}
                 </div>
+                {pushToTalkHeld && (
+                    <div
+                        className="flex items-center gap-2 px-3 py-1 mb-1 text-xs text-red-600 dark:text-red-400 animate-pulse"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        <Microphone weight="fill" className="w-4 h-4" />
+                        <span>
+                            Recording... release {PUSH_TO_TALK_HOTKEY.label} to transcribe
+                        </span>
+                    </div>
+                )}
                 <div
                     className={`${styles.actualInputArea} justify-between dark:bg-neutral-700 relative ${isDragAndDropping && "animate-pulse"}`}
                     onDragOver={handleDragOver}
@@ -748,6 +859,8 @@ export const ChatInputArea = forwardRef<HTMLTextAreaElement, ChatInputProps>((pr
                                                 variant="default"
                                                 className={`${!message || recording || "hidden"} ${props.agentColor ? convertToBGClass(props.agentColor) : "bg-orange-300 hover:bg-orange-500"} rounded-full p-1 m-2 h-auto text-3xl transition transform md:hover:-translate-y-1`}
                                                 disabled={props.sendDisabled || !props.isLoggedIn}
+                                                aria-label={`Transcribe voice (or hold ${PUSH_TO_TALK_HOTKEY.label} for push-to-talk)`}
+                                                title={`Click to transcribe, or hold ${PUSH_TO_TALK_HOTKEY.label} for push-to-talk`}
                                                 onClick={() => {
                                                     setMessage("Listening...");
                                                     setRecording(!recording);
@@ -760,7 +873,7 @@ export const ChatInputArea = forwardRef<HTMLTextAreaElement, ChatInputProps>((pr
                                     <TooltipContent>
                                         {props.sendDisabled
                                             ? "Click here to stop the streaming."
-                                            : "Click to transcribe your message with voice."}
+                                            : `Click to transcribe, or hold ${PUSH_TO_TALK_HOTKEY.label} for push-to-talk.`}
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>

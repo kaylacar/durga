@@ -240,7 +240,7 @@ export function AgentCard(props: AgentCardProps) {
     if (showModal) {
         window.history.pushState(
             {},
-            `Khoj AI - Agent ${props.data.slug}`,
+            `Durga AI - Agent ${props.data.slug}`,
             `/agents?agent=${props.data.slug}`,
         );
     }
@@ -341,7 +341,7 @@ export function AgentCard(props: AgentCardProps) {
                         open={showModal}
                         onOpenChange={() => {
                             setShowModal(!showModal);
-                            window.history.pushState({}, `Khoj AI - Agents`, `/agents`);
+                            window.history.pushState({}, `Durga AI - Agents`, `/agents`);
                         }}
                     >
                         <DialogTrigger className="focus-visible:outline-none">

@@ -1,107 +1,130 @@
-<p align="center"><img src="https://assets.khoj.dev/khoj-logo-sideways-1200x540.png" width="230" alt="Khoj Logo"></p>
+# Durga
 
-<div align="center">
+A self-hosted, sensitive-by-default personal AI assistant that declares what she does.
 
-[![test](https://github.com/khoj-ai/khoj/actions/workflows/test.yml/badge.svg)](https://github.com/khoj-ai/khoj/actions/workflows/test.yml)
-[![docker](https://github.com/khoj-ai/khoj/actions/workflows/dockerize.yml/badge.svg)](https://github.com/khoj-ai/khoj/pkgs/container/khoj)
-[![pypi](https://github.com/khoj-ai/khoj/actions/workflows/pypi.yml/badge.svg)](https://pypi.org/project/khoj/)
-[![discord](https://img.shields.io/discord/1112065956647284756?style=plastic&label=discord)](https://discord.gg/BDgyabRM6e)
-
-</div>
-
-<div align="center">
-<b>Your AI second brain</b>
-</div>
-
-<br />
-
-<div align="center">
-
-[📑 Docs](https://docs.khoj.dev)
-<span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-[🌐 Web](https://khoj.dev)
-<span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-[🔥 App](https://app.khoj.dev)
-<span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-[💬 Discord](https://discord.gg/BDgyabRM6e)
-<span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
-[✍🏽 Blog](https://blog.khoj.dev)
-
-<a href="https://trendshift.io/repositories/10318" target="_blank"><img src="https://trendshift.io/api/badge/repositories/10318" alt="khoj-ai%2Fkhoj | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-
-</div>
+<!-- CI/build badges intentionally omitted while Durga's own CI is being set up.
+     Re-add here once kaylacar/durga has its own pipelines. -->
 
 ***
 
-### 🎁 New
-* Meet 🌶️ **[Pipali](https://pipali.ai)** - our [open-source](https://github.com/khoj-ai/pipali) AI coworker that runs on your computer.
-* [Read](https://blog.khoj.dev/posts/evaluate-khoj-quality/) about Khoj's excellent performance on modern retrieval and reasoning benchmarks.
+## What Durga is
+
+Durga is a personal AI assistant you run yourself. She watches the files you point her at, answers questions over them, and talks back when called. The codebase is a fork of [khoj-ai/khoj](https://github.com/khoj-ai/khoj), kept under AGPL-3.0, with the Khoj team's runtime preserved underneath. The Durga layer on top is the part that makes her different: explicit declaration of behavior, a transparent execution trail, and defaults that minimize what leaves the machine she runs on.
+
+She has two intended use cases:
+
+- **Single-operator.** A live, voice-driven sidekick. Push to talk, hear an answer, keep working. Built around the way the owner actually uses an assistant on camera.
+- **Self-hosted multi-user.** A personal AI a small team or client can run on their own infrastructure, with isolated per-user data and no required cloud.
+
+There is no Durga Cloud. There is no hosted SaaS. The only Durga is the one you run.
 
 ***
 
-## Overview
+## Why she's different
 
-[Khoj](https://khoj.dev) is a personal AI app to extend your capabilities. It smoothly scales up from an on-device personal AI to a cloud-scale enterprise AI.
+Most personal AI assistants are opaque. You ask, something happens, an answer comes back, and you have no auditable record of what was read, what was sent to a model, or what the model decided.
 
-- Chat with any local or online LLM (e.g llama3, qwen, gemma, mistral, gpt, claude, gemini, deepseek).
-- Get answers from the internet and your docs (including image, pdf, markdown, org-mode, word, notion files).
-- Access it from your Browser, Obsidian, Emacs, Desktop, Phone or Whatsapp.
-- Create agents with custom knowledge, persona, chat model and tools to take on any role.
-- Automate away repetitive research. Get personal newsletters and smart notifications delivered to your inbox.
-- Find relevant docs quickly and easily using our advanced semantic search.
-- Generate images, talk out loud, play your messages.
-- Khoj is open-source, self-hostable. Always.
-- Run it privately on [your computer](https://docs.khoj.dev/get-started/setup) or try it on our [cloud app](https://app.khoj.dev).
+Durga is a reference implementation of [Tech Enrichment](https://techenrichment.com)'s declaration stack. Specifically:
+
+- **Declared behavior.** Each Durga instance serves [`/.well-known/agents.txt`](https://github.com/kaylacar/agents-txt) and [`/.well-known/ai.txt`](https://github.com/kaylacar/ai-txt). The capabilities Durga exposes, the rate limits she enforces, the training/data policy she runs under — all published in the format other agents and operators can read.
+- **Transparent execution.** Every chat turn produces a [RER](https://github.com/kaylacar/rer)-style receipt: what she read, which model she called, how many tokens she used, what she returned. Hash-chained, verifiable offline.
+- **Pre-flight gating.** Tool calls run through [agentpreflight](https://github.com/kaylacar/agentpreflight) before they execute. Filesystem, network, secrets, and scope rules fire before a bad call leaves the agent.
+- **Owner-controlled data.** The defaults are local-only. No telemetry, no analytics, no cloud sync, no calls home. Anything outbound is opt-in and explicit.
+- **Sensitivity tags.** Files in your workspace can be marked sensitive (`# durga: sensitive` frontmatter). Tagged files are summarized or redacted locally before any prompt is built — they are never shipped to the LLM as raw text.
+
+If you want a personal AI that you can point at and say "show me what you actually did," Durga is the project for that.
 
 ***
 
-## See it in action
+## Quick start
 
-![demo_chat](https://github.com/khoj-ai/khoj/blob/master/documentation/assets/img/quadratic_equation_khoj_web.gif?raw=true)
+Durga ships as a Docker Compose stack, the same way Khoj does upstream. (Image and service names will be renamed as the build pipeline moves over to `kaylacar/durga`. For now, the upstream `ghcr.io/khoj-ai/khoj` image still works.)
 
-Go to https://app.khoj.dev to see Khoj live.
+```bash
+git clone https://github.com/kaylacar/durga.git
+cd durga
+docker compose up
+```
 
-## Full feature list
-You can see the full feature list [here](https://docs.khoj.dev/category/features).
+Then open `http://localhost:42110`.
 
-## Self-Host
+The default configuration is anonymous, single-user, local-only. No accounts, no telemetry, no outbound calls. Configure model providers and storage via the environment variables in `docker-compose.yml`.
 
-To get started with self-hosting Khoj, [read the docs](https://docs.khoj.dev/get-started/setup).
+For the original installation flow inherited from Khoj, see the [upstream setup docs](https://docs.khoj.dev/get-started/setup). Most of it still applies — replace product names accordingly. Durga's own docs will live in `documentation/` once the rebrand pass lands.
 
-## Enterprise
+***
 
-Khoj is available as a cloud service, on-premises, or as a hybrid solution. To learn more about Khoj Enterprise, [visit our website](https://khoj.dev/teams).
+## Architecture
 
-## Frequently Asked Questions (FAQ)
+```
+┌─────────────┐   ┌──────────┐   ┌──────────┐
+│ web / desk  │ → │  server  │ → │    db    │
+│  client     │   │ (FastAPI)│   │ (pg + pgvector) │
+└─────────────┘   └────┬─────┘   └──────────┘
+                       │
+                  ┌────┴─────┐
+                  │  proxy   │   codex CLI / OpenAI / Anthropic /
+                  │ (LLMs)   │   Ollama / llama.cpp / Gemini
+                  └──────────┘
+```
 
-Q: Can I use Khoj without self-hosting?
+- **server** — Python / FastAPI. Inherits Khoj's indexer, search, and chat orchestration. Adds the Durga governance layer (agents.txt route, ai.txt route, RER receipts, preflight hooks, sensitivity-tag handling).
+- **web** — Next.js client. Inherits Khoj's UI; rebranded surface and additional governance views.
+- **db** — Postgres + pgvector for indexed content and conversation history.
+- **proxy** — model provider abstraction. Talks to local (Ollama, llama.cpp) or hosted (OpenAI, Anthropic, Gemini, codex) backends.
+- **sandbox / search** — optional Khoj subsystems (Terrarium for code execution, SearxNG for web search). Off by default.
 
-Yes! You can use Khoj right away at [https://app.khoj.dev](https://app.khoj.dev) — no setup required.
+***
 
-Q: What kinds of documents can Khoj read?
+## Sensitive defaults
 
-Khoj supports a wide variety: PDFs, Markdown, Notion, Word docs, org-mode files, and more.
+These are the promises Durga makes when you run her with the shipped config:
 
-Q: How can I make my own agent?
+- **Local only.** Telemetry off. Analytics off. No cloud sync. No calls home.
+- **Outbound is opt-in.** Each provider key (OpenAI, Anthropic, Gemini, Serper, etc.) is a separate, explicit environment variable. Unset means no calls.
+- **Sensitivity tags are honored.** Files marked `# durga: sensitive` are summarized or redacted locally before any prompt is built. The raw text never reaches the model.
+- **Receipts on.** Every chat turn writes a RER-style receipt to disk. You can read it. You can verify it without Durga running.
+- **Per-user isolation.** When run multi-user, indexed content is isolated per user account. (Khoj's multi-user mode is being audited for Durga's stricter assumptions; treat as `verify before relying on` until the audit lands.)
 
-Check out [this blog post](https://blog.khoj.dev/posts/create-agents-on-khoj/) for a step-by-step guide to custom agents.
-For more questions, head over to our [Discord](https://discord.gg/BDgyabRM6e)!
+What still leaves the machine when Durga is running, if you've configured it:
 
+- The prompts and context you send to the LLM provider you chose. Providers see what you ask. That's the model call.
+- Web search queries, if web search is enabled and configured.
+- Anything the embedded sandbox or web fetcher reaches out to, if those features are enabled.
 
-## Contributors
-Cheers to our awesome contributors! 🎉
+If you don't configure those, none of it leaves.
 
-<a href="https://github.com/khoj-ai/khoj/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=khoj-ai/khoj" />
-</a>
+***
 
-Made with [contrib.rocks](https://contrib.rocks).
+## Roadmap
 
-### Interested in Contributing?
-Khoj is open source. It is sustained by the community and we’d love for you to join it! Whether you’re a coder, designer, writer, or enthusiast, there’s a place for you.
+See [`DURGA_PLAN.md`](./DURGA_PLAN.md) for the full plan. Short version:
 
-Why Contribute?
-- Make an Impact: Help build, test and improve a tool used by thousands to boost productivity.
-- Learn & Grow: Work on cutting-edge AI, LLMs, and semantic search technologies.
+- **Voice that works on camera.** Push-to-talk, low-latency TTS (Edge Neural or OpenAI), Whisper-large-v3 STT, output routed to OS audio so OBS can capture it.
+- **The governance layer.** `agents.txt` and `ai.txt` routes, RER receipts on every turn, agentpreflight on every tool call, sensitivity tags as a first-class concept.
+- **Multi-tenant audit.** Verify Khoj's per-user isolation, strip remaining telemetry surface, document exactly what data leaves the machine in each configuration.
+- **On-camera UX.** Floating transcript, mid-reply interrupt, "pull up the spec" quick-reference mode.
 
-You can help us build new features, improve the project documentation, report issues and fix bugs. If you're a developer, please see our [Contributing Guidelines](https://docs.khoj.dev/contributing/development) and check out [good first issues](https://github.com/khoj-ai/khoj/contribute) to work on.
+Durga is going to diverge from Khoj over time. The goal is not to track every upstream feature — it is to keep a clean fork point so security and bug fixes can still be pulled from `khoj-ai/khoj` while the Durga layer evolves on its own.
+
+***
+
+## Built on khoj-ai/khoj
+
+Durga is a fork of [khoj-ai/khoj](https://github.com/khoj-ai/khoj), distributed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
+The original work — the file watcher, the indexer, the chat orchestration, the multi-client architecture, the Obsidian / Emacs / desktop integrations, and a great deal more — is the work of the Khoj team and contributors. Durga is honestly a wrapper-and-additions on top of a substantial open-source project. Credit where it's due.
+
+If you want vanilla Khoj or hosted Khoj Cloud, go to [khoj.dev](https://khoj.dev). They are not the same product as Durga and should not be confused.
+
+Full attribution and copyright in [`NOTICE.md`](./NOTICE.md). License in [`LICENSE`](./LICENSE).
+
+***
+
+## Contact
+
+Kayla Cardillo / Tech Enrichment — `contactkaylacard@gmail.com`
+
+Project: [github.com/kaylacar/durga](https://github.com/kaylacar/durga) (forked from [khoj-ai/khoj](https://github.com/khoj-ai/khoj))
+
+Tech Enrichment: [techenrichment.com](https://techenrichment.com) · Brand: [machinesrule.com](https://machinesrule.com) · Standards: [machinepolicy.org](https://machinepolicy.org)

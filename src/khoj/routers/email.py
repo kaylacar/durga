@@ -44,7 +44,7 @@ async def send_magic_link_email(email, unique_id, host):
         {
             "sender": os.environ.get("RESEND_EMAIL", "noreply@khoj.dev"),
             "to": email,
-            "subject": "Your login code to Khoj",
+            "subject": "Your login code to Durga",
             "html": html_content,
         }
     )
@@ -63,7 +63,7 @@ async def send_welcome_email(name, email):
         {
             "sender": os.environ.get("RESEND_EMAIL", "team@khoj.dev"),
             "to": email,
-            "subject": f"{name}, four ways to use Khoj" if name else "Four ways to use Khoj",
+            "subject": f"{name}, four ways to use Durga" if name else "Four ways to use Durga",
             "html": html_content,
         }
     )
@@ -127,7 +127,7 @@ def send_task_email(name, email, query, result, subject, is_image=False):
 
     r = resend.Emails.send(
         {
-            "sender": f"Khoj <{os.environ.get('RESEND_EMAIL', 'khoj@khoj.dev')}>",
+            "sender": f"Durga <{os.environ.get('RESEND_EMAIL', 'khoj@khoj.dev')}>",
             "to": email,
             "subject": f"✨ {subject}",
             "html": html_content,

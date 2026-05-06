@@ -30,7 +30,12 @@ SearchType = utils_config.SearchType
 scheduler: BackgroundScheduler = None
 schedule_leader_process_lock: ProcessLock = None
 telemetry: List[Dict[str, str]] = []
-telemetry_disabled: bool = is_env_var_true("KHOJ_TELEMETRY_DISABLE")
+# Durga: telemetry is OFF by default (privacy-first). Set DURGA_TELEMETRY_ENABLE=true (or
+# KHOJ_TELEMETRY_ENABLE=true for upstream compat) to opt in. The legacy KHOJ_TELEMETRY_DISABLE
+# env var is still honored if present, but no longer needed for an opt-out flow.
+telemetry_disabled: bool = not (
+    is_env_var_true("DURGA_TELEMETRY_ENABLE") or is_env_var_true("KHOJ_TELEMETRY_ENABLE")
+) or is_env_var_true("KHOJ_TELEMETRY_DISABLE")
 khoj_version: str = None
 device = get_device()
 anonymous_mode: bool = False

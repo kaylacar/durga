@@ -262,7 +262,7 @@ function EmailSignInContext({
                 <ArrowLeft className="h-6 w-6" />
             </Button>
             <div>
-                <div className="text-center font-bold text-xl">Get started with Khoj</div>
+                <div className="text-center font-bold text-xl">Get started with Durga</div>
             </div>
             <div className="text-center text-sm text-muted-foreground">
                 {checkEmail

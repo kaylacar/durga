@@ -4,16 +4,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { ChatwootWidget } from "../components/chatWoot/ChatwootWidget";
 
 export const metadata: Metadata = {
-    title: "Khoj AI - Settings",
-    description: "Configure Khoj to get personalized, deeper assistance.",
+    title: "Durga AI - Settings",
+    description: "Configure Durga to get personalized, deeper assistance.",
     icons: {
         icon: "/static/assets/icons/khoj_lantern.ico",
         apple: "/static/assets/icons/khoj_lantern_256x256.png",
     },
     openGraph: {
-        siteName: "Khoj AI",
-        title: "Khoj AI - Settings",
-        description: "Setup, configure, and personalize Khoj, your AI research assistant.",
+        siteName: "Durga AI",
+        title: "Durga AI - Settings",
+        description: "Setup, configure, and personalize Durga, your AI research assistant.",
         url: "https://app.khoj.dev/settings",
         type: "website",
         images: [

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "../../globals.css";
 
 export const metadata: Metadata = {
-    title: "Khoj AI - Ask Anything",
+    title: "Durga AI - Ask Anything",
     description:
         "Ask anything. Research answers from across the internet and your documents, draft messages, summarize documents, generate paintings and chat with personal agents.",
     icons: {
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
         apple: "/static/assets/icons/khoj_lantern_256x256.png",
     },
     openGraph: {
-        siteName: "Khoj AI",
-        title: "Khoj AI - Ask Anything",
+        siteName: "Durga AI",
+        title: "Durga AI - Ask Anything",
         description:
             "Ask anything. Research answers from across the internet and your documents, draft messages, summarize documents, generate paintings and chat with personal agents.",
         url: "https://app.khoj.dev/chat",

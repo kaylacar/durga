@@ -3,16 +3,16 @@ import type { Metadata } from "next";
 import "../globals.css";
 
 export const metadata: Metadata = {
-    title: "Khoj AI - Search",
+    title: "Durga AI - Search",
     description:
-        "Find anything in documents you've shared with Khoj using natural language queries.",
+        "Find anything in documents you've shared with Durga using natural language queries.",
     icons: {
         icon: "/static/assets/icons/khoj_lantern.ico",
         apple: "/static/assets/icons/khoj_lantern_256x256.png",
     },
     openGraph: {
-        siteName: "Khoj AI",
-        title: "Khoj AI - Search",
+        siteName: "Durga AI",
+        title: "Durga AI - Search",
         description: "Your Second Brain.",
         url: "https://app.khoj.dev/search",
         type: "website",

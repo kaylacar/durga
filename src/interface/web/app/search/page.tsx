@@ -378,7 +378,7 @@ const UploadFiles: React.FC<{
                 <DialogHeader>
                     <DialogTitle>Build Your Knowledge Base</DialogTitle>
                     <DialogDescription>
-                        Add context for your Khoj knowledge base. Quickly search and get
+                        Add context for your Durga knowledge base. Quickly search and get
                         personalized answers from your documents.
                     </DialogDescription>
                 </DialogHeader>

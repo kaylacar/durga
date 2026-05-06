@@ -104,7 +104,7 @@ SCHEDULE_LEADER_NAME = ProcessLock.Operation.SCHEDULE_LEADER
 
 
 def shutdown_scheduler():
-    logger.info("🌑 Shutting down Khoj")
+    logger.info("🌑 Shutting down Durga")
 
     if state.schedule_leader_process_lock:
         logger.info("🔓 Schedule Leader released")
@@ -131,7 +131,7 @@ def run(should_start_server=True):
     elif args.verbose >= 1:
         logger.setLevel(logging.DEBUG)
 
-    logger.info(f"🚒 Initializing Khoj v{state.khoj_version}")
+    logger.info(f"🚒 Initializing Durga v{state.khoj_version}")
     logger.info(f"📦 Initializing DB:\n{db_migrate_output.getvalue().strip()}")
     logger.debug(f"🌍 Initializing Web Client:\n{collectstatic_output.getvalue().strip()}")
 
@@ -145,7 +145,7 @@ def run(should_start_server=True):
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
 
-    logger.info("🌘 Starting Khoj")
+    logger.info("🌘 Starting Durga")
 
     # Setup task scheduler
     poll_task_scheduler()
@@ -216,7 +216,7 @@ def set_state(args):
 
 
 def start_server(app, host=None, port=None, socket=None):
-    logger.info("🌖 Khoj is ready to engage")
+    logger.info("🌖 Durga is ready to engage")
     if socket:
         uvicorn.run(
             app,
@@ -240,7 +240,7 @@ def start_server(app, host=None, port=None, socket=None):
             timeout_keep_alive=60,
             **state.ssl_config if state.ssl_config else {},
         )
-    logger.info("🌒 Stopping Khoj")
+    logger.info("🌒 Stopping Durga")
 
 
 def poll_task_scheduler():

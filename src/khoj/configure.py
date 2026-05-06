@@ -327,6 +327,7 @@ def configure_routes(app):
     from khoj.routers.api_model import api_model
     from khoj.routers.notion import notion_router
     from khoj.routers.web_client import web_client
+    from khoj.routers.well_known import well_known_router
 
     app.include_router(api, prefix="/api")
     app.include_router(api_chat, prefix="/api/chat")
@@ -336,6 +337,7 @@ def configure_routes(app):
     app.include_router(api_memories, prefix="/api/memories")
     app.include_router(api_content, prefix="/api/content")
     app.include_router(notion_router, prefix="/api/notion")
+    app.include_router(well_known_router, prefix="/.well-known")
     app.include_router(web_client)
 
     if not state.anonymous_mode:
@@ -433,7 +435,10 @@ def configure_search_types():
 @schedule.repeat(schedule.every(2).minutes)
 @clean_connections
 def upload_telemetry():
-    if state.telemetry_disabled or not state.telemetry:
+    # Durga: hard-stop if telemetry is disabled (default), if there is nothing to send,
+    # or if no telemetry server has been explicitly configured. The third check defends
+    # against accidental phone-home if a downstream packager sets a default URL again.
+    if state.telemetry_disabled or not state.telemetry or not constants.telemetry_server:
         return
 
     try:

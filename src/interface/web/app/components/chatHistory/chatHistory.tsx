@@ -496,7 +496,7 @@ export default function ChatHistory(props: ChatHistoryProps) {
 
     function constructAgentName() {
         if (!data || !data.agent || !data.agent?.name) return `Agent`;
-        if (data.agent.is_hidden) return "Khoj";
+        if (data.agent.is_hidden) return "Durga";
         return data.agent?.name;
     }
 
@@ -565,7 +565,7 @@ export default function ChatHistory(props: ChatHistoryProps) {
                             <KhojLogo className="print-logo" />
                         </div>
                         <div className="print-header-right">
-                            <h1>{data?.slug || "Conversation with Khoj"}</h1>
+                            <h1>{data?.slug || "Conversation with Durga"}</h1>
                             <div className="conversation-meta">
                                 <p>
                                     <strong>Agent:</strong> {constructAgentName()}

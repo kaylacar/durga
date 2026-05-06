@@ -1319,7 +1319,12 @@ async def search_documents(
     # Extract filter terms from user message
     defiltered_query = defilter_query(q)
     filters_in_query = q.replace(defiltered_query, "").strip()
-    conversation = await sync_to_async(ConversationAdapters.get_conversation_by_id)(conversation_id)
+    # Durga: scope conversation lookup to the requesting user. Upstream's
+    # get_conversation_by_id() does not filter by user, which would let an attacker
+    # supply another tenant's conversation_id and have its file_filters bias the search.
+    conversation = await ConversationAdapters.aget_conversation_by_user(
+        user=user, conversation_id=conversation_id
+    )
 
     if not conversation:
         logger.error(f"Conversation with id {conversation_id} not found when extracting references.")
@@ -2553,8 +2558,10 @@ def scheduled_chat(
         # encode the conversation_id to avoid any issues with special characters
         query_dict["conversation_id"] = [quote(str(conversation_id))]
 
-        # validate that the conversation id exists. If not, delete the automation and exit.
-        if not ConversationAdapters.get_conversation_by_id(conversation_id):
+        # validate that the conversation id exists AND belongs to the user. If not, delete
+        # the automation and exit. Durga: scoped by user to prevent cross-tenant existence
+        # probing via scheduled-job conversation lookups.
+        if not ConversationAdapters.get_conversation_by_user(user=user, conversation_id=conversation_id):
             AutomationAdapters.delete_automation(user, job_id)
             return
 

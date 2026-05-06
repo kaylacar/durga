@@ -838,7 +838,7 @@ function AutomationModificationForm(props: AutomationModificationFormProps) {
                     render={({ field }) => (
                         <FormItem className="space-y-1">
                             <FormLabel>Instructions</FormLabel>
-                            <FormDescription>What do you want Khoj to do?</FormDescription>
+                            <FormDescription>What do you want Durga to do?</FormDescription>
                             {props.create && (
                                 <div>
                                     {recommendationPills.map((recommendation) =>

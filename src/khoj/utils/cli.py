@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 def cli(args=None):
     # Setup Argument Parser for the Commandline Interface
-    parser = argparse.ArgumentParser(description="Start Khoj; An AI personal assistant for your Digital Brain")
+    parser = argparse.ArgumentParser(description="Start Durga; An AI personal assistant for your Digital Brain")
     parser.add_argument(
         "--log-file",
         default="~/.khoj/khoj.log",
@@ -25,18 +25,18 @@ def cli(args=None):
     )
     parser.add_argument("--sslcert", type=str, help="Path to SSL certificate file")
     parser.add_argument("--sslkey", type=str, help="Path to SSL key file")
-    parser.add_argument("--version", "-V", action="store_true", help="Print the installed Khoj version and exit")
+    parser.add_argument("--version", "-V", action="store_true", help="Print the installed Durga version and exit")
     parser.add_argument(
         "--anonymous-mode",
         action="store_true",
         default=False,
-        help="Run Khoj in single user mode with no login required. Useful for personal use or testing.",
+        help="Run Durga in single user mode with no login required. Useful for personal use or testing.",
     )
     parser.add_argument(
         "--non-interactive",
         action="store_true",
         default=False,
-        help="Start Khoj in non-interactive mode. Assumes interactive shell unavailable for config. E.g when run via Docker.",
+        help="Start Durga in non-interactive mode. Assumes interactive shell unavailable for config. E.g when run via Docker.",
     )
 
     args, remaining_args = parser.parse_known_args(args)

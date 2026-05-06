@@ -244,7 +244,7 @@ function ApiKeyCard() {
             </CardHeader>
             <CardContent className="overflow-hidden grid gap-6">
                 <p className="text-md text-gray-400">
-                    Access Khoj from the{" "}
+                    Access Durga from the{" "}
                     <a href="https://docs.khoj.dev/clients/desktop" target="_blank">
                         Desktop
                     </a>
@@ -292,7 +292,7 @@ function ApiKeyCard() {
                                             onClick={() => {
                                                 toast({
                                                     title: `🔑 Copied API Key: ${key.name}`,
-                                                    description: `Set this API key in the Khoj apps you want to connect to this Khoj account`,
+                                                    description: `Set this API key in the Durga apps you want to connect to this Durga account`,
                                                 });
                                                 copyAPIKey(key.token);
                                             }}
@@ -303,7 +303,7 @@ function ApiKeyCard() {
                                             onClick={() => {
                                                 toast({
                                                     title: `🔑 Deleted API Key: ${key.name}`,
-                                                    description: `Apps using this API key will no longer connect to this Khoj account`,
+                                                    description: `Apps using this API key will no longer connect to this Durga account`,
                                                 });
                                                 deleteAPIKey(key.token);
                                             }}
@@ -708,8 +708,8 @@ export default function SettingsView() {
             toast({
                 title: enabled ? "Memory enabled" : "Memory disabled",
                 description: enabled
-                    ? "Khoj will learn and remember from your conversations."
-                    : "Khoj will no longer learn or remember from your conversations.",
+                    ? "Durga will learn and remember from your conversations."
+                    : "Durga will no longer learn or remember from your conversations.",
             });
         } catch (error) {
             console.error('Error toggling memory:', error);
@@ -779,7 +779,7 @@ export default function SettingsView() {
             } else {
                 toast({
                     title: `✅ Disconnected ${source}`,
-                    description: `Your ${source} integration to Khoj has been disconnected.`,
+                    description: `Your ${source} integration to Durga has been disconnected.`,
                 });
             }
         } catch (error) {
@@ -828,7 +828,7 @@ export default function SettingsView() {
                                                 </CardHeader>
                                                 <CardContent className="overflow-hidden">
                                                     <p className="pb-4 text-gray-400">
-                                                        What should Khoj refer to you as?
+                                                        What should Durga refer to you as?
                                                     </p>
                                                     <Input
                                                         type="text"
@@ -1062,7 +1062,7 @@ export default function SettingsView() {
                                                                 setNotionToken(e.target.value)
                                                             }
                                                             value={notionToken || ""}
-                                                            placeholder="Enter API Key of your Khoj integration on Notion"
+                                                            placeholder="Enter API Key of your Durga integration on Notion"
                                                             className="w-full border border-gray-300 rounded-lg px-4 py-6"
                                                         />
                                                     )}

@@ -2,7 +2,19 @@ const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell, session } =
 const todesktop = require("@todesktop/runtime");
 const khojPackage = require('./package.json');
 
-todesktop.init();
+// Durga: ToDesktop's runtime contacts toDesktop infrastructure for auto-updates and crash
+// reporting. Privacy-first default: do NOT initialize unless the user opts in by setting
+// DURGA_AUTOUPDATE=1 in the environment. KHOJ_AUTOUPDATE=1 is honored as an alias for
+// upstream compat. When opted out, the autoUpdater calls below become no-ops.
+const _autoUpdateEnabled = (
+    process.env.DURGA_AUTOUPDATE === '1'
+    || process.env.DURGA_AUTOUPDATE === 'true'
+    || process.env.KHOJ_AUTOUPDATE === '1'
+    || process.env.KHOJ_AUTOUPDATE === 'true'
+);
+if (_autoUpdateEnabled) {
+    todesktop.init();
+}
 
 const fs = require('fs');
 const {dialog} = require('electron');
@@ -10,7 +22,14 @@ const {dialog} = require('electron');
 const cron = require('cron').CronJob;
 const axios = require('axios');
 
-const KHOJ_URL = 'https://app.khoj.dev';
+// Durga: privacy-first default. The desktop app no longer points at the hosted Khoj
+// service. Self-hosters get a local server URL by default. Override by setting
+// DURGA_SERVER_URL (or KHOJ_URL for upstream compat), or via the in-app host setting.
+const KHOJ_URL = (
+    process.env.DURGA_SERVER_URL
+    || process.env.KHOJ_URL
+    || 'http://127.0.0.1:42110'
+);
 
 const Store = require('electron-store');
 
@@ -623,6 +642,11 @@ app.whenReady().then(() => {
     });
 
     app.on('ready', async() => {
+        // Durga: skip the update check entirely when auto-update is opt-out (default).
+        if (!_autoUpdateEnabled) {
+            console.log("Durga: auto-update disabled. Set DURGA_AUTOUPDATE=1 to enable.");
+            return;
+        }
         try {
             const result = await todesktop.autoUpdater.checkForUpdates();
             if (result.updateInfo) {

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Dict
 
@@ -9,7 +10,14 @@ pypi_static_directory = app_root_directory / "khoj/interface/compiled/"
 assetlinks_file_path = web_directory / ".well-known/assetlinks.json"
 empty_escape_sequences = "\n|\r|\t| "
 app_env_filepath = "~/.khoj/env"
-telemetry_server = "https://khoj.beta.haletic.com/v1/telemetry"
+# Durga: no telemetry endpoint by default. Even when telemetry is opt-in enabled, an explicit
+# DURGA_TELEMETRY_SERVER (or KHOJ_TELEMETRY_SERVER for upstream compat) URL must be set or
+# uploads silently no-op. Upstream's default points at a third-party PostHog-backed receiver.
+telemetry_server = (
+    os.getenv("DURGA_TELEMETRY_SERVER")
+    or os.getenv("KHOJ_TELEMETRY_SERVER")
+    or ""
+)
 content_directory = "~/.khoj/content/"
 default_openai_chat_models = ["gpt-4o-mini", "gpt-4.1", "o3", "o4-mini"]
 default_gemini_chat_models = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.5-flash-lite"]
