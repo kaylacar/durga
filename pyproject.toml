@@ -97,7 +97,7 @@ dependencies = [
     "mcp >= 1.23.0",
     "pyasn1>=0.6.3",
 ]
-dynamic = ["version"]
+version = "0.1.0-durga"
 
 [project.urls]
 Homepage = "https://khoj.dev"
