@@ -41,11 +41,12 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    # Use the following line to use the latest version of khoj. Otherwise, it will build from source. Set this to ghcr.io/khoj-ai/khoj-cloud:latest if you want to use the prod image.
-    image: ghcr.io/khoj-ai/khoj:latest
-    # Uncomment the following line to build from source. This will take a few minutes. Comment the next two lines out if you want to use the official image.
-    # build:
-      # context: .
+    # Build Durga from this checkout by default. Do not use the upstream Khoj image as proof that Durga runs.
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: 0.1.0+durga
     ports:
       # If changing the local port (left hand side), no other changes required.
       # If changing the remote port (right hand side),
@@ -117,10 +118,8 @@ services:
       # For example, if the load balancer service is added to the khoj docker network, set KHOJ_ALLOWED_DOMAIN to khoj's docker service name: `server'.
       # - KHOJ_ALLOWED_DOMAIN=server
       # - KHOJ_ALLOWED_DOMAIN=127.0.0.1
-      # Uncomment the line below to disable telemetry.
-      # Telemetry helps us prioritize feature development and understand how people are using Khoj
-      # Read more at https://docs.khoj.dev/miscellaneous/telemetry
-      # - KHOJ_TELEMETRY_DISABLE=True
+      # Durga defaults to telemetry disabled. Keep outbound behavior explicit and opt-in.
+      - KHOJ_TELEMETRY_DISABLE=True
     # Comment out this line when you're using the official ghcr.io/khoj-ai/khoj-cloud:latest prod image.
     command: --host="0.0.0.0" --port=42110 -vv --anonymous-mode --non-interactive
 

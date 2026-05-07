@@ -38,17 +38,17 @@ If you want a personal AI that you can point at and say "show me what you actual
 
 ## Quick start
 
-Durga ships as a Docker Compose stack, the same way Khoj does upstream. (Image and service names will be renamed as the build pipeline moves over to `kaylacar/durga`. For now, the upstream `ghcr.io/khoj-ai/khoj` image still works.)
+Durga ships as a Docker Compose stack, the same way Khoj does upstream. The default Compose path builds Durga from this checkout so the quickstart exercises Durga code, not the upstream Khoj image.
 
 ```bash
 git clone https://github.com/kaylacar/durga.git
 cd durga
-docker compose up
+docker compose up --build
 ```
 
 Then open `http://localhost:42110`.
 
-The default configuration is anonymous, single-user, local-only. No accounts, no telemetry, no outbound calls. Configure model providers and storage via the environment variables in `docker-compose.yml`.
+The default configuration is anonymous, single-user, local-only, with telemetry disabled. Configure model providers and storage via the environment variables in `docker-compose.yml`; outbound model or search calls should be explicit opt-ins.
 
 For the original installation flow inherited from Khoj, see the [upstream setup docs](https://docs.khoj.dev/get-started/setup). Most of it still applies — replace product names accordingly. Durga's own docs will live in `documentation/` once the rebrand pass lands.
 
