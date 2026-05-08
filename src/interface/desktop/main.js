@@ -278,14 +278,15 @@ function pushDataToKhoj (regenerate = false) {
         console.error(error);
         state["completed"] = false;
         if (error?.response?.status === 429 && (BrowserWindow.getAllWindows().find(win => win.webContents.getURL().includes('settings')))) {
-            state["error"] = `Looks like you're out of space to sync your files. <a href="https://app.khoj.dev/settings#subscription">Upgrade your plan</a> to unlock more space.`;
+            state["error"] = `Looks like you're out of space to sync your files. Ask the operator of this Durga instance to raise your quota.`;
             const win = BrowserWindow.getAllWindows().find(win => win.webContents.getURL().includes('settings'));
             if (win) win.webContents.send('needsSubscription', true);
         } else if (error?.code === 'ECONNREFUSED') {
-            state["error"] = `Could not connect to Khoj server. Ensure you can connect to it at ${error.address}:${error.port}.`;
+            state["error"] = `Could not connect to Durga server. Ensure you can connect to it at ${error.address}:${error.port}.`;
         } else {
             currentTime = new Date();
-            state["error"] = `Sync was unsuccessful at ${currentTime.toLocaleTimeString()}. Contact team@khoj.dev to report this issue.`;
+            const supportEmail = process.env.DURGA_SUPPORT_EMAIL || 'the operator of this Durga instance';
+            state["error"] = `Sync was unsuccessful at ${currentTime.toLocaleTimeString()}. Contact ${supportEmail} to report this issue.`;
         }
     })
     .finally(() => {
@@ -430,13 +431,16 @@ function addCSPHeaderToSession () {
     // Get hostURL from store or use default
     const hostURL = store.get('hostURL') || KHOJ_URL;
 
-    // Construct Content Security Policy
-    const defaultDomains = `'self' ${hostURL} https://app.khoj.dev https://assets.khoj.dev`;
+    // Durga: CSP is built from the configured hostURL only. Upstream Khoj's
+    // hardcoded *.khoj.dev allowances are NOT included — a Durga deployment
+    // must not silently allow outbound to upstream Khoj. If the operator
+    // intentionally points at the hosted SaaS, hostURL covers that case.
+    const defaultDomains = `'self' ${hostURL}`;
     const default_src = `default-src ${defaultDomains};`;
     const script_src = `script-src ${defaultDomains} 'unsafe-inline';`;
     const connect_src = `connect-src ${hostURL} https://ipapi.co/json;`;
     const style_src = `style-src ${defaultDomains} 'unsafe-inline' https://fonts.googleapis.com;`;
-    const img_src = `img-src ${defaultDomains} data: https://*.khoj.dev https://*.googleusercontent.com;`;
+    const img_src = `img-src ${defaultDomains} data: https://*.googleusercontent.com;`;
     const font_src = `font-src https://fonts.gstatic.com;`;
     const child_src = `child-src 'none';`;
     const objectSrc = `object-src 'none';`;

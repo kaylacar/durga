@@ -2149,7 +2149,7 @@ class ApiUserRateLimiter:
             )
             raise HTTPException(
                 status_code=429,
-                detail="I'm glad you're enjoying interacting with me! You've unfortunately exceeded your usage limit for today. You can subscribe to increase your usage limit via [your settings](https://app.khoj.dev/settings) or we can continue our conversation tomorrow?",
+                detail="I'm glad you're enjoying interacting with me! You've unfortunately exceeded your usage limit for today. Ask the operator of this Durga instance to raise your limit, or we can continue our conversation tomorrow?",
             )
 
         # Add the current request to the cache
@@ -2199,7 +2199,7 @@ class ApiUserRateLimiter:
             )
             raise HTTPException(
                 status_code=429,
-                detail=f"{common_message_prefix} You can subscribe to increase your usage limit via [your settings](https://app.khoj.dev/settings) or we can continue our conversation {next_window}.",
+                detail=f"{common_message_prefix} Ask the operator of this Durga instance to raise your limit, or we can continue our conversation {next_window}.",
             )
 
         # Add the current request to the cache
@@ -2378,7 +2378,7 @@ class ConversationCommandRateLimiter:
             )
             raise HTTPException(
                 status_code=429,
-                detail=f"I'm glad you're enjoying interacting with me! You've unfortunately exceeded your `/{conversation_command.value}` command usage limit for today. You can subscribe to increase your usage limit via [your settings](https://app.khoj.dev/settings) or we can talk about something else for today?",
+                detail=f"I'm glad you're enjoying interacting with me! You've unfortunately exceeded your `/{conversation_command.value}` command usage limit for today. Ask the operator of this Durga instance to raise the limit, or we can talk about something else for today?",
             )
         await UserRequests.objects.acreate(user=user, slug=command_slug)
         return

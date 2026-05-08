@@ -29,6 +29,11 @@ ELEVEN_API_URL = "https://api.elevenlabs.io/v1/text-to-speech"
 # Catalog: https://github.com/rany2/edge-tts (run `edge-tts --list-voices`).
 EDGE_TTS_DEFAULT_VOICE = os.getenv("DURGA_TTS_VOICE", "en-US-AriaNeural")
 
+# DoS guards: cap input length and upstream call duration.
+# Values can be overridden by env. Defaults sized for live on-camera replies.
+TTS_MAX_INPUT_CHARS = int(os.getenv("DURGA_TTS_MAX_INPUT_CHARS", "4096"))
+TTS_REQUEST_TIMEOUT_SECONDS = float(os.getenv("DURGA_TTS_TIMEOUT_SECONDS", "30"))
+
 markdown_renderer = MarkdownIt()
 
 
@@ -82,12 +87,15 @@ def _looks_like_edge_voice(voice_id: str | None) -> bool:
 async def _edge_tts_async(text: str, voice: str) -> bytes:
     import edge_tts
 
-    chunks: list[bytes] = []
-    communicate = edge_tts.Communicate(text, voice)
-    async for chunk in communicate.stream():
-        if chunk.get("type") == "audio":
-            chunks.append(chunk["data"])
-    return b"".join(chunks)
+    async def _gather() -> bytes:
+        chunks: list[bytes] = []
+        communicate = edge_tts.Communicate(text, voice)
+        async for chunk in communicate.stream():
+            if chunk.get("type") == "audio":
+                chunks.append(chunk["data"])
+        return b"".join(chunks)
+
+    return await asyncio.wait_for(_gather(), timeout=TTS_REQUEST_TIMEOUT_SECONDS)
 
 
 def _generate_edge_tts(text: str, voice: str) -> _BytesStream:
@@ -120,7 +128,13 @@ def _generate_eleven_labs(text: str, voice_id: str):
             "use_speaker_boost": True,
         },
     }
-    response = requests.post(tts_url, headers=headers, json=data, stream=True)
+    response = requests.post(
+        tts_url,
+        headers=headers,
+        json=data,
+        stream=True,
+        timeout=TTS_REQUEST_TIMEOUT_SECONDS,
+    )
     if response.ok:
         return response
     raise TextToSpeechError(f"ElevenLabs TTS failed: {response.text}")
@@ -139,6 +153,12 @@ def generate_text_to_speech(
     Edge TTS regardless of the default. ElevenLabs voice IDs route ElevenLabs.
     """
     text = _markdown_to_plain(text_to_speak)
+    # DoS guard: refuse oversized inputs before we hit any upstream.
+    if len(text) > TTS_MAX_INPUT_CHARS:
+        raise TextToSpeechError(
+            f"Text-to-speech input is {len(text)} characters; "
+            f"limit is {TTS_MAX_INPUT_CHARS} (configurable via DURGA_TTS_MAX_INPUT_CHARS)."
+        )
 
     # Explicit per-request routing via voice_id shape.
     if _looks_like_edge_voice(voice_id):
